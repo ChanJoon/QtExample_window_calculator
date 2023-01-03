@@ -319,7 +319,10 @@ void MainWindow::mathOpButtonClicked()
 }
 void MainWindow::dotButtonClicked()
 {
-    keyInputVal += ".";
+    if (!keyInputVal.contains("."))
+    {
+        keyInputVal += ".";
+    }
     showResult();
 }
 void MainWindow::delButtonClicked()
