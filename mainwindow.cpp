@@ -115,6 +115,7 @@ void MainWindow::handleInitMemButton()
 }
 void MainWindow::handleMemoryButton()
 {
+    // if memory empty, deactivate MC, MR, M Buttons.
     if(!mem.isEmpty())
     {
         ui->pushButton_MC->setStyleSheet("QPushButton{background: transparent;}\
@@ -151,10 +152,8 @@ void MainWindow::numButtonClicked()
     QString num = pObject->objectName().back();
 
     if (num == "0" && keyInputVal == "0"); // Button0 clicked when initial state
-    else
-    {
-        if (keyInputVal == "0" || isCalButtonClicked)
-        {
+    else{
+        if (keyInputVal == "0" || isCalButtonClicked){
             // After = button clicked, if operator clicked then calculation continued. if not initialized.
             if(isCalButtonClicked)
             {
@@ -194,13 +193,13 @@ void MainWindow::opButtonClicked()
         isLastOp = false;
     }
 
-    if (calMode == true)
-    {
-        // Debug
+    if (calMode == true){
         QString opLast;
         double a = 0;
-        if (outputVal.isEmpty())
-        {
+        double b = keyInputVal.toDouble();
+        double result = 0;
+
+        if (outputVal.isEmpty()){
             // No Operator exsited before. e.g. 3=
             outputVal = keyInputVal + op;
             isLastOp = false;
@@ -210,9 +209,6 @@ void MainWindow::opButtonClicked()
             opLast = outputVal.back();
             a = outputVal.chopped(1).toDouble();
         }
-
-        double b = keyInputVal.toDouble();
-        double result = 0;
 
         if (b == 0 && opLast == "\u00F7"){
             qDebug() << "Division by zero";
@@ -231,29 +227,25 @@ void MainWindow::opButtonClicked()
                 // opLast is not last value of outputVal.
                 QStringList outputArr;
 
-                if (outputVal.contains("\u002B"))   // plus
-                {
+                if (outputVal.contains("\u002B")){          // plus
                     opLast = "\u002B";
                     outputArr = outputVal.split("\u002B");
                     a = outputArr[0].toDouble();
                     result = a + keyInputVal.toDouble();
                 }
-                else if (outputVal.contains("-"))   // minus
-                {
+                else if (outputVal.contains("-")){          // minus
                     opLast = "-";
                     outputArr = outputVal.split("-");
                     a = outputArr[0].toDouble();
                     result = a - keyInputVal.toDouble();
                 }
-                else if (outputVal.contains("\u00D7"))  // multiplication
-                {
+                else if (outputVal.contains("\u00D7")){     // multiplication
                     opLast = "\u00D7";
                     outputArr = outputVal.split("\u00D7");
                     a = outputArr[0].toDouble();
                     result = a * keyInputVal.toDouble();
                 }
-                else if (outputVal.contains("\u00F7"))  // division
-                {
+                else if (outputVal.contains("\u00F7")){     // division
                     opLast = "\u00F7";
                     outputArr = outputVal.split("\u00F7");
                     a = outputArr[0].toDouble();
@@ -264,10 +256,10 @@ void MainWindow::opButtonClicked()
             }
             keyInputVal = QString::number(result, 'g', 10);
 
-            if (isCalButtonClicked){    // visualize result with = operator.
+            if (isCalButtonClicked){            // visualize = operator at the end of the privious result.
                 outputVal = QString::number(a, 'g', 10) + opLast + QString::number(b, 'g', 10) + op;
             }
-            else outputVal = keyInputVal + op;
+            else outputVal = keyInputVal + op;  // else operator changes.
 
 
         }
@@ -287,8 +279,7 @@ void MainWindow::mathOpButtonClicked()
 
     isLastOp = true;
     if (!outputVal.isEmpty()) opLast = outputVal.back();
-    else
-    {
+    else{
         // Debug
         opLast = "";
         qDebug() << "[ERROR] No operation existed. outputVal is empty";
@@ -319,10 +310,8 @@ void MainWindow::mathOpButtonClicked()
 }
 void MainWindow::dotButtonClicked()
 {
-    if (!keyInputVal.contains("."))
-    {
-        keyInputVal += ".";
-    }
+    // add decimal point once
+    if (!keyInputVal.contains(".")) keyInputVal += ".";
     showResult();
 }
 void MainWindow::delButtonClicked()
@@ -338,6 +327,7 @@ void MainWindow::clearEButtonClicked()
 }
 void MainWindow::clearButtonClicked()
 {
+    // reinitialize
     keyInputVal = "0";
     outputVal = "";
     isLastOp = false;
@@ -347,8 +337,7 @@ void MainWindow::clearButtonClicked()
 }
 void MainWindow::pmButtonClicked()
 {
-    if (keyInputVal != "0")
-    {
+    if (keyInputVal != "0"){
         if (keyInputVal.front() != '-') keyInputVal = "-" + keyInputVal;
         else keyInputVal = keyInputVal.right(keyInputVal.length()-1);
     }
@@ -356,14 +345,12 @@ void MainWindow::pmButtonClicked()
 }
 void MainWindow::modButtonClicked()
 {
-    if(!outputVal.isEmpty())
-    {
+    if(!outputVal.isEmpty()){
         QString op;
         if (!outputVal.isEmpty()) op = outputVal.back();
         else qDebug() << "[ERROR] No operation existed. outputVal is empty";
 
-        if (op != "=")
-        {
+        if (op != "="){
             double a = outputVal.chopped(1).toDouble();
             double b = keyInputVal.toDouble();
             double result = 0;
@@ -374,8 +361,7 @@ void MainWindow::modButtonClicked()
             outputVal = QString::number(a, 'g', 10) + op + QString::number(result, 'g', 10);
         }
     }
-    else
-    {
+    else{
         keyInputVal = "0";
         outputVal = "0";
     }
@@ -448,7 +434,7 @@ void MainWindow::MButtonClicked()
 }
 void MainWindow::showResult()
 {
-    qDebug() << "isCalButtonClicked: " << isCalButtonClicked << "CalMode: " << calMode << "isLastOp: " << isLastOp;
+//    qDebug() << "isCalButtonClicked: " << isCalButtonClicked << "CalMode: " << calMode << "isLastOp: " << isLastOp;
 
     QString keyOutput;
     if(keyInputVal != "0으로 나눌 수 없습니다") keyOutput = addComma(keyInputVal); // Exception. Division by zero.
@@ -528,6 +514,28 @@ QString MainWindow::addComma(QString s)
 }
 float MainWindow::getWidgetMaximumFontSize(QWidget *widget, QString text)
 {
+//    MIT License
+
+//    Copyright (c) 2017 Jonas Dourado
+
+//    Permission is hereby granted, free of charge, to any person obtaining a copy
+//    of this software and associated documentation files (the "Software"), to deal
+//    in the Software without restriction, including without limitation the rights
+//    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//    copies of the Software, and to permit persons to whom the Software is
+//    furnished to do so, subject to the following conditions:
+
+//    The above copyright notice and this permission notice shall be included in all
+//    copies or substantial portions of the Software.
+
+//    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//    SOFTWARE.
+
     QFont font = widget->font();
     const QRect widgetRect = widget->contentsRect();
     const float widgetWidth = widgetRect.width();
